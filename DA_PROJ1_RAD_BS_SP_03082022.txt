@@ -1,0 +1,294 @@
+SELECT COUNT(*)
+FROM covid_deaths_aug2022;
+--205692
+
+SELECT COUNT(*)
+FROM covid_vaccinations_aug2022;
+--205692
+
+-------------------
+
+SELECT *
+FROM covid_deaths_aug2022;
+
+SELECT *
+FROM covid_vaccinations_aug2022;
+
+SELECT *
+FROM covid_deaths_aug2022
+ORDER BY 3,4;
+
+SELECT *
+FROM covid_vaccinations_aug2022
+ORDER BY 3,4;
+
+SELECT LOCATION, TO_DATE(DATUM,'MM/DD/YYYY') AS DATUM, TOTAL_CASES, TOTAL_DEATHS, POPULATION
+FROM covid_deaths_aug2022;
+
+select TO_DATE('2/24/2020','MM/DD/YYYY')
+FROM DUAL;
+
+select location,  TO_DATE(DATUM,'MM/DD/YYYY') AS DATUM, total_cases, new_cases, total_deaths, population
+from covid_deaths_aug2022
+order by 1,2;
+
+--procenat smrtnosti
+select location,  TO_DATE(DATUM,'MM/DD/YYYY') AS DATUM, total_cases, new_cases, total_deaths, (total_deaths/total_cases)*100 as DeathPercentage
+from covid_deaths_aug2022
+where location = 'United States'--like '%Stat%'
+order by 1,2;
+
+select location,  TO_DATE(DATUM,'MM/DD/YYYY') AS DATUM, total_cases, new_cases, total_deaths, (total_deaths/total_cases)*100 as DeathPercentage
+from covid_deaths_aug2022
+where location like '%Serb%'
+order by 1,2;
+
+select location,  TO_DATE(DATUM,'MM/DD/YYYY') AS DATUM, total_cases, new_cases, total_deaths, (total_deaths/total_cases)*100 as DeathPercentage
+from covid_deaths_aug2022
+where location like '%Bos%'
+order by 1,2;
+
+select location,  TO_DATE(DATUM,'MM/DD/YYYY') AS DATUM, total_cases, new_cases, total_deaths, (total_deaths/total_cases)*100 as DeathPercentage
+from covid_deaths_aug2022
+where location like '%Slovenia%'
+order by 1,2;
+
+select location,  TO_DATE(DATUM,'MM/DD/YYYY') AS DATUM, total_cases, new_cases, total_deaths, (total_deaths/total_cases)*100 as DeathPercentage
+from covid_deaths_aug2022
+where location like '%Cro%'
+order by 1,2;
+
+--ukupan broj slucajeva u odnosu na broj stanovnika
+select location,  TO_DATE(DATUM,'MM/DD/YYYY') AS DATUM, population, total_cases, new_cases, (total_cases/population)*100 as procenat_zarazenih
+from covid_deaths_aug2022
+--where location = 'United States'
+order by 1,2;
+
+--po zadnjoj koloni najveci broj zarazenih
+select location,  population, max(total_cases) as highestInfectionCount, max((total_cases/population))*100 as DeathPopulationInfected
+from covid_deaths_aug2022
+--where location like '%Cro%'
+group by location,population
+order by 4 desc; --u opadajucem poretku
+
+--showing 
+select location, max(total_deaths) as TotalDeathCount 
+from covid_deaths_aug2022
+where continent is not null
+group by location
+order by TotalDeathCount desc;
+
+select* 
+from covid_deaths
+where CONTINENT is not null
+order by 3,4;
+
+select location, max(total_deaths) as TotalDeathCount 
+from covid_deaths_aug2022
+where continent is not null
+group by location
+order by TotalDeathCount desc;
+
+select continent, max(total_deaths) as TotalDeathCount 
+from covid_deaths_aug2022
+where continent is not null
+group by continent
+order by TotalDeathCount desc;
+
+select location, max(total_deaths) as TotalDeathCount 
+from covid_deaths_aug2022
+where continent is null and location not in ('High income', 'Upper middle income', 'World', 'Lower middle income','Low income', 'International')
+group by location
+order by TotalDeathCount desc;
+
+select continent, max(total_deaths) as TotalDeathCount 
+from covid_deaths_aug2022
+where continent is not null and location not in ('High income', 'Upper middle income', 'World', 'Lower middle income','Low income', 'International')
+group by continent
+order by TotalDeathCount desc;
+
+
+--show continents with the highest deat count per population
+select continent, max(total_deaths) as TotalDeathCount 
+from covid_deaths_aug2022
+where continent is not null and location not in ('High income', 'Upper middle income', 'World', 'Lower middle income','Low income', 'International')
+group by continent
+order by TotalDeathCount desc;
+
+--global numbers
+select location, TO_DATE(DATUM,'MM/DD/YYYY') AS DATUM, total_cases, total_deaths, (total_deaths/total_cases)*100 as DeathPercentage
+from covid_deaths_aug2022
+where continent is not null
+order by 1,2;
+
+select TO_DATE(DATUM,'MM/DD/YYYY') AS DATUM, sum(new_cases)   --, total_deaths, (total_deaths/total_cases)*100 as DeathPercentage
+from covid_deaths_aug2022
+where continent is not null
+group by TO_DATE (DATUM,'MM/DD/YYYY')
+order by 1,2;
+
+select TO_DATE(DATUM,'MM/DD/YYYY') AS DATUM, sum(new_cases), sum(new_deaths), sum(New_deaths)/sum(new_Cases)*100 as DeathPercentage   --, total_deaths, (total_deaths/total_cases)*100 as DeathPercentage
+from covid_deaths_aug2022
+where continent is not null
+group by TO_DATE (DATUM,'MM/DD/YYYY')
+order by 1,2;
+
+select TO_DATE(DATUM,'MM/DD/YYYY') AS DATUM, sum(new_cases) as total_cases, sum(new_deaths) as total_deaths, sum(New_deaths)/sum(new_Cases)*100 as DeathPercentage   --, total_deaths, (total_deaths/total_cases)*100 as DeathPercentage
+from covid_deaths_aug2022
+where continent is not null
+group by TO_DATE (DATUM,'MM/DD/YYYY')
+order by 1,2;
+
+select  sum(new_cases) as total_cases, sum(new_deaths) as total_deaths, sum(New_deaths)/sum(new_Cases)*100 as DeathPercentage   --, total_deaths, (total_deaths/total_cases)*100 as DeathPercentage
+from covid_deaths_aug2022
+where continent is not null
+--group by TO_DATE (DATUM,'MM/DD/YYYY')
+order by 1,2;
+
+select*
+from covid_deaths_aug2022 dea 
+join covid_vaccinations_aug2022 vac
+    on dea.location = vac.location
+    and dea.DATUM = vac.DATUM;
+
+select dea.continent, dea.location, dea.DATUM, dea.population, vac.new_vaccinations
+from covid_deaths_aug2022 dea 
+join covid_vaccinations_aug2022 vac
+    on dea.location = vac.location
+    and dea.DATUM = vac.DATUM
+order by 1,2,3;
+
+
+select dea.continent, dea.location, dea.DATUM, dea.population, vac.new_vaccinations
+from covid_deaths_aug2022 dea 
+join covid_vaccinations_aug2022 vac
+    on dea.location = vac.location
+    and dea.DATUM = vac.DATUM
+    where dea.continent is not null -- and vac.new_vaccinations is not null
+order by 2,3;
+
+with PopvsVac
+as (continent, location, 
+
+select dea.continent, dea.location, dea.DATUM, dea.population, vac.new_vaccinations, sum(vac.new_vaccinations) over (Partition by dea.location order by dea.location, dea.DATUM) as RollingPeopleVaccinated --, (RollingPeopleVaccinated/population)*100
+from covid_deaths_aug2022 dea 
+join covid_vaccinations_aug2022 vac
+    on dea.location = vac.location
+    and dea.DATUM = vac.DATUM
+    where dea.continent is not null 
+order by 2,3;
+
+
+--Preko with clause
+ 
+WITH popvsvac AS (
+    SELECT
+        dea.continent,
+        dea.location,
+        dea.datum,
+        dea.population,
+        vac.new_vaccinations,
+        SUM(vac.new_vaccinations)
+        OVER(PARTITION BY dea.location
+             ORDER BY dea.location, dea.datum
+        ) AS rolling_people_vaccinated
+    FROM
+             covid_deaths_aug2022 dea
+        JOIN covid_vaccinations_aug2022 vac ON ( dea.location = vac.location
+                                         AND dea.datum = vac.datum )
+    WHERE
+        dea.continent IS NOT NULL
+)
+SELECT
+    p.*,
+    ( p.rolling_people_vaccinated / p.population ) * 100 AS roll_pp_vac_per_pop FROM
+    popvsvac p;
+    
+ -- DROP TABLE   percent_population_vaccinated;
+ 
+ 
+    CREATE TABLE percent_population_vaccinated (
+    continent                  VARCHAR2(26),
+    location                   VARCHAR2(200),
+    datum                        DATE,
+    population                 NUMBER(38),
+    new_vaccinations           NUMBER(38),
+    rolling_people_vaccinated  NUMBER(38)
+);
+ 
+INSERT INTO percent_population_vaccinated
+    SELECT
+        dea.continent,
+        dea.location,
+        dea.datum,
+        dea.population,
+        vac.new_vaccinations,
+        SUM(vac.new_vaccinations)
+        OVER(PARTITION BY dea.location
+             ORDER BY dea.location, dea.DATUM
+        ) AS rolling_people_vaccinated
+    FROM
+             covid_deaths dea
+        JOIN covid_vaccinations vac ON ( dea.location = vac.location
+                                         AND dea.datum = vac.datum );
+                                       
+--Kreiranje viewa radi koristenja u kasnijoj vizualizaciji
+ 
+--DROP VIEW percent_population_vaccinated_v;
+ 
+CREATE VIEW percent_pop_vacc_v AS
+    SELECT
+        dea.continent,
+        dea.location,
+        dea.DATUM,
+        dea.population,
+        vac.new_vaccinations,
+        SUM(vac.new_vaccinations)
+        OVER(PARTITION BY dea.location
+             ORDER BY dea.location, dea.DATUM
+        ) AS rolling_people_vacc
+    FROM
+             covid_deaths dea
+        JOIN covid_vaccinations vac ON dea.location = vac.location
+                                       AND dea.DATUM = vac.DATUM
+    WHERE
+        dea.continent IS NOT NULL;
+        
+--Provjera
+SELECT
+    *
+FROM
+    percent_pop_vacc_v;
+ 
+--03.08.2022, 14:48, "Sinisa Roljic" <roljingstones@yandex.com>:
+--Preko with clause
+ 
+WITH popvsvac AS (
+    SELECT
+        dea.continent,
+        dea.location,
+        dea.DATUM,
+        dea.population,
+        vac.new_vaccinations,
+        SUM(vac.new_vaccinations)
+        OVER(PARTITION BY dea.location
+             ORDER BY dea.location, dea.DATUM
+        ) AS rolling_people_vaccinated
+    FROM
+             covid_deaths dea
+        JOIN covid_vaccinations vac ON ( dea.location = vac.location
+                                         AND dea.DATUM = vac.DATUM )
+    WHERE
+        dea.continent IS NOT NULL
+)
+SELECT
+    p.*,
+    ( p.rolling_people_vaccinated / p.population ) * 100 AS roll_pp_vac_per_pop
+FROM
+    popvsvac p;
+
+
+
+
+
+
